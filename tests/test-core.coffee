@@ -3,6 +3,7 @@
 fs   = require "fs"
 path = require "path"
 
+_      = require "underscore"
 coffee = require "coffee-script"
 expect = require "expect.js"
 ports  = require "ports"
@@ -10,7 +11,11 @@ ports  = require "ports"
 cfenv = require ".."
 
 SavedEnv = JSON.stringify process.env
-TestDir  = path.join process.cwd(), "tmp"
+SavedDir = process.cwd()
+TestDir  = path.join SavedDir, "tmp"
+
+SampleName = "cf-env-testing-app"
+SamplePort = ports.getPort SampleName
 
 Manifest_01 = """
 """
@@ -20,127 +25,408 @@ describe "appEnv", ->
 
   #-----------------------------------------------------------------------------
   beforeEach ->
-    process.env = JSON.parse SavedEnv
+    process.env = {}
     process.chdir TestDir
     fs.unlinkSync "manifest.yml" if fs.existsSync "manifest.yml"
+    fs.unlinkSync "package.json" if fs.existsSync "package.json"
 
   #-----------------------------------------------------------------------------
-  it "should handle empty environment", ->
+  afterEach ->
+    fs.unlinkSync "package.json" if fs.existsSync "package.json"
+    fs.unlinkSync "manifest.yml" if fs.existsSync "manifest.yml"
+    process.chdir SavedDir
+    process.env = JSON.parse SavedEnv
+
+  #-----------------------------------------------------------------------------
+  it "local - empty environment", ->
     appEnv = cfenv.getAppEnv()
-    expect(appEnv.name).not.to.be.ok()
-    expect(appEnv.port).to.be 3000
-    expect(appEnv.bind).to.be "localhost"
+    expect(appEnv.name).to.be        null
+    expect(appEnv.port).to.be        3000
+    expect(appEnv.bind).to.be        "localhost"
     expect(appEnv.urls.length).to.be 1
-    expect(appEnv.urls[0]).to.be appEnv.url
-    expect(appEnv.url).to.be "http://localhost:3000"
+    expect(appEnv.urls[0]).to.be     appEnv.url
+    expect(appEnv.url).to.be         "http://localhost:3000"
+    expect(appEnv.isLocal).to.be     true
+
+    app = appEnv.app
+    svs = appEnv.services
+
+    expect(_.isEmpty(app)).to.be true
+    expect(_.isEmpty(svs)).to.be true
 
   #-----------------------------------------------------------------------------
-  it "should handle getting port via ports.getPort()", ->
-    name = "cf-env-testing-app"
-    port = ports.getPort name
-
-    appEnv = cfenv.getAppEnv {name}
-    expect(appEnv.name).to.be name
-    expect(appEnv.port).to.be port
-    expect(appEnv.bind).to.be "localhost"
+  it "local - getting port via name parm and ports.getPort()", ->
+    appEnv = cfenv.getAppEnv {name: SampleName}
+    expect(appEnv.name).to.be        SampleName
+    expect(appEnv.port).to.be        SamplePort
+    expect(appEnv.bind).to.be        "localhost"
     expect(appEnv.urls.length).to.be 1
-    expect(appEnv.urls[0]).to.be appEnv.url
-    expect(appEnv.url).to.be "http://localhost:#{port}"
+    expect(appEnv.urls[0]).to.be     appEnv.url
+    expect(appEnv.url).to.be         "http://localhost:#{SamplePort}"
+    expect(appEnv.isLocal).to.be     true
 
   #-----------------------------------------------------------------------------
-  it "should handle getting port via PORT env var", ->
+  it "local - getting port via PORT env var", ->
 
-    process.env.PORT = "6000"
-
-    appEnv = cfenv.getAppEnv()
-    expect(appEnv.name).not.to.be.ok()
-    expect(appEnv.port).to.be 6000
-    expect(appEnv.bind).to.be "localhost"
-    expect(appEnv.urls.length).to.be 1
-    expect(appEnv.urls[0]).to.be appEnv.url
-    expect(appEnv.url).to.be "http://localhost:6000"
-
-  #-----------------------------------------------------------------------------
-  it "should handle getAppEnv({name}) default", ->
-    name     = "cf-env-testing-app"
-    nameParm = "#{name}-parm"
-
-    process.env.VCAP_APPLICATION = JSON.stringify {name}
-
-    appEnv = cfenv.getAppEnv {name: nameParm}
-    expect(appEnv.name).to.be nameParm
-    expect(appEnv.port).to.be ports.getPort nameParm
-
-  #-----------------------------------------------------------------------------
-  it "should handle getAppEnv({name}) default", ->
-    name = "cf-env-testing-app"
-
-    process.env.VCAP_APPLICATION = JSON.stringify {name}
+    port = 6000
+    process.env.PORT = "#{port}"
 
     appEnv = cfenv.getAppEnv()
-    expect(appEnv.name).to.be name
-    expect(appEnv.port).to.be ports.getPort name
-
-  #-----------------------------------------------------------------------------
-  it "should handle getAppEnv({protocol})", ->
-
-    appEnv = cfenv.getAppEnv protocol: "https:"
-    expect(appEnv.name).not.to.be.ok()
-    expect(appEnv.port).to.be 3000
-    expect(appEnv.bind).to.be "localhost"
+    expect(appEnv.name).to.be        null
+    expect(appEnv.port).to.be        port
+    expect(appEnv.bind).to.be        "localhost"
     expect(appEnv.urls.length).to.be 1
-    expect(appEnv.urls[0]).to.be appEnv.url
-    expect(appEnv.url).to.be "https://localhost:3000"
+    expect(appEnv.urls[0]).to.be     appEnv.url
+    expect(appEnv.url).to.be         "http://localhost:#{port}"
+    expect(appEnv.isLocal).to.be     true
 
   #-----------------------------------------------------------------------------
-  it "should handle data-01.cson", ->
-    setEnv "data-01.cson"
+  it "local - getAppEnv({protocol})", ->
+
+    appEnv = cfenv.getAppEnv({protocol: "foo:"})
+    expect(appEnv.urls.length).to.be 1
+    expect(appEnv.url).to.be         "foo://localhost:3000"
+
+  #-----------------------------------------------------------------------------
+  it "local - getAppEnv({vcap.application})", ->
+
+    vcap =
+      application:
+        name: SampleName
+        host: "sample-host"
+        uris: [ "sample-uri.example.com", "sample-uri.example.net" ]
+
+    appEnv = cfenv.getAppEnv({vcap})
+    expect(appEnv.name).to.be        SampleName
+    expect(appEnv.port).to.be        SamplePort
+    expect(appEnv.bind).to.be        vcap.application.host
+    expect(appEnv.urls.length).to.be 1
+    expect(appEnv.url).to.be         "http://localhost:#{SamplePort}"
+    expect(appEnv.isLocal).to.be     true
+
+    app = appEnv.app
+
+    expect(JSON.stringify(app)).to.be JSON.stringify(vcap.application)
+
+  #-----------------------------------------------------------------------------
+  it "local - getAppEnv({vcap.services})", ->
+
+    vcap = services: SampleVCAPServices_1
+
+    appEnv = cfenv.getAppEnv({vcap})
+
+    svs = appEnv.services
+
+    expect(JSON.stringify(svs)).to.be JSON.stringify(vcap.services)
+
+    expected = {}
+    for label, services of vcap.services
+      for service in services
+        expected[service.name] = service
+
+    expected = SampleVCAPServices_1.serviceLabel_2[1]
+    service  = appEnv.getService "serviceName_B"
+    expect(JSON.stringify(service)).to.be JSON.stringify(expected)
+
+    service  = appEnv.getService /serviceName_B/
+    expect(JSON.stringify(service)).to.be JSON.stringify(expected)
+
+    service  = appEnv.getService /B/
+    expect(JSON.stringify(service)).to.be JSON.stringify(expected)
+
+  #-----------------------------------------------------------------------------
+  it "local - getServiceURL()", ->
+
+    #-------------------------------------------
+    vcap = getVCAPServicesWithCreds "service-a",
+      url: "foo"
+
+    appEnv = cfenv.getAppEnv {vcap}
+    url    = appEnv.getServiceURL "service-a"
+    expect(url).to.be "foo"
+
+    #-------------------------------------------
+    vcap = getVCAPServicesWithCreds "service-a",
+      uri: "foo"
+
+    appEnv = cfenv.getAppEnv {vcap}
+    url    = appEnv.getServiceURL "service-a"
+    expect(url).to.be "foo"
+
+    #-------------------------------------------
+    vcap = getVCAPServicesWithCreds "service-a",
+      url:    "org-protocol://org-host:666/org-path"
+      proto:  "http:"
+      server: "example.com:80"
+      PORT:   "80"
+      path:   "new-path"
+
+    appEnv = cfenv.getAppEnv {vcap}
+    url    = appEnv.getServiceURL "service-a",
+      protocol: "proto"
+      host:     "server"
+      pathname: "path"
+
+    expect(url).to.be "http://example.com:80/new-path"
+
+    #-------------------------------------------
+    vcap = getVCAPServicesWithCreds "service-a",
+      protocol: "proto:"
+      host:     "server"
+      pathname: "path"
+
+    appEnv = cfenv.getAppEnv {vcap}
+    url    = appEnv.getServiceURL "service-a"
+
+    expect(url).to.be null
+
+    #-------------------------------------------
+    vcap = getVCAPServicesWithCreds "service-a",
+      URL:    "org-protocol://org-host:666/org-path"
+
+    appEnv = cfenv.getAppEnv {vcap}
+    url    = appEnv.getServiceURL "service-a",
+      url: "URL"
+
+    expect(url).to.be "org-protocol://org-host:666/org-path"
+
+  #-----------------------------------------------------------------------------
+  it "remote - VCAP_APPLICATION", ->
+
+    vcap =
+      application:
+        name: SampleName
+        host: "sample-host"
+        uris: [ "sample-uri.example.com", "sample-uri.example.net" ]
+
+    process.env.VCAP_APPLICATION = JSON.stringify vcap.application
+    process.env.PORT             = "666"
 
     appEnv = cfenv.getAppEnv()
+    expect(appEnv.name).to.be        SampleName
+    expect(appEnv.port).to.be        666
+    expect(appEnv.bind).to.be        vcap.application.host
+    expect(appEnv.urls.length).to.be 2
+    expect(appEnv.url).to.be         "https://sample-uri.example.com"
+    expect(appEnv.isLocal).to.be     false
 
-    expect(appEnv.app.host).to.be "0.0.0.0"
-    expect(appEnv.services["user-provided"]).to.be.ok()
-    expect(appEnv.name).to.be "cf-env-test"
-    expect(appEnv.port).to.be 61165
-    expect(appEnv.bind).to.be "0.0.0.0"
-    expect(appEnv.urls.length).to.be 1
-    expect(appEnv.urls[0]).to.be appEnv.url
-    expect(appEnv.url).to.be "https://cf-env-test.ng.bluemix.net"
+    app = appEnv.app
 
-    services = appEnv.getServices()
+    expect(JSON.stringify(app)).to.be JSON.stringify(vcap.application)
 
-    for name, service1 in services
-      service2 = appEnv.getService name
-      expect(JS service1).to.be(JS service2)
+  #-----------------------------------------------------------------------------
+  it "remote - getAppEnv({protocol})", ->
 
-    service1 = appEnv.getService "cf-env-test"
-    service2 = appEnv.getService /env/
-    expect(JS service1).to.be(JS service2)
+    vcap =
+      application:
+        name: SampleName
+        host: "sample-host"
+        uris: [ "sample-uri.example.com", "sample-uri.example.net" ]
 
-    url = appEnv.getServiceURL "cf-env-test",
-      pathname: "database"
-      auth:     ["username", "password"]
+    process.env.VCAP_APPLICATION = JSON.stringify vcap.application
+    process.env.PORT             = "666"
 
-    expect(url).to.be "https://userid:passw0rd@example.com/database"
+    appEnv = cfenv.getAppEnv({protocol: "foo:"})
+    expect(appEnv.url).to.be         "foo://sample-uri.example.com"
+
+  #-----------------------------------------------------------------------------
+  it "remote - getAppEnv({vcap}) ignored", ->
+
+    vcap = getVCAPServicesWithCreds "service-a", uri: "http://example.com"
+    vcap.application =
+      name: SampleName
+      host: "sample-host"
+      uris: [ "sample-uri.example.com", "sample-uri.example.net" ]
+
+    process.env.VCAP_APPLICATION = JSON.stringify vcap.application
+    process.env.VCAP_SERVICES    = JSON.stringify vcap.services
+    process.env.PORT             = "666"
+
+    vcap = getVCAPServicesWithCreds "service-a", uri: "http://example.net"
+    vcap.application =
+      name: "foo"
+      host: "foo"
+      uris: [ "foo" ]
+
+    appEnv = cfenv.getAppEnv {vcap}
+    expect(appEnv.url).to.be         "https://sample-uri.example.com"
+
+    url = appEnv.getServiceURL "service-a"
+    expect(url).to.be          "http://example.com/"
+
+#-----------------------------------------------------------------------------
+  it "name - from option", ->
+
+    appEnv = cfenv.getAppEnv name: "foo"
+    expect(appEnv.name).to.be "foo"
+
+    #----------------------------------------
+    vcapApplication =
+      name: "bar"
+      uris: []
+
+    process.env.VCAP_APPLICATION = JSON.stringify vcapApplication
+
+    appEnv = cfenv.getAppEnv name: "foo"
+    expect(appEnv.name).to.be "foo"
+
+#-----------------------------------------------------------------------------
+  it "name - from manifest.yml", ->
+
+    fs.writeFileSync "manifest.yml", """
+      applications:
+      - name:    foo
+        memory:  128M
+    """
+
+    fs.writeFileSync "package.json", """
+    {
+      "name": "bar",
+      "main": "./lib/bar"
+    }
+    """
+
+    appEnv = cfenv.getAppEnv()
+    expect(appEnv.name).to.be "foo"
+
+#-----------------------------------------------------------------------------
+  it "name - bogus manifest.yml", ->
+
+    fs.writeFileSync "manifest.yml", """
+      ap)(*&))plications:
+      )(*&9 name:    foo
+      m(*)()emory:  128M
+    """
+
+    fs.writeFileSync "package.json", """
+    {
+      "name": "bar",
+      "main": "./lib/bar"
+    }
+    """
+
+    appEnv = cfenv.getAppEnv()
+    expect(appEnv.name).to.be "bar"
+
+#-----------------------------------------------------------------------------
+  it "name - from package.json", ->
+
+    fs.writeFileSync "package.json", """
+    {
+      "name": "bar",
+      "main": "./lib/bar"
+    }
+    """
+
+    appEnv = cfenv.getAppEnv()
+    expect(appEnv.name).to.be "bar"
+
+#-----------------------------------------------------------------------------
+  it "name - bogus package.json", ->
+
+    fs.writeFileSync "package.json", """
+    foop)(*)(*){
+      "name": "bar",
+      "main": "./lib/bar"
+    }
+    """
+
+    appEnv = cfenv.getAppEnv()
+    expect(appEnv.name).to.be null
+
+  #-----------------------------------------------------------------------------
+  it "error - VCAP_APPLICATION is not JSON", ->
+
+    process.env.VCAP_APPLICATION = ":foo:)("
+
+    fn = -> appEnv = cfenv.getAppEnv()
+    console.log "expecting an error printed below:"
+    expect(fn).to.throwError /VCAP_APPLICATION is not JSON/
+
+  #-----------------------------------------------------------------------------
+  it "error - VCAP_SERVICES is not JSON", ->
+
+    process.env.VCAP_SERVICES = ":foo:)("
+
+    fn = -> appEnv = cfenv.getAppEnv()
+    console.log "expecting an error printed below:"
+    expect(fn).to.throwError /VCAP_SERVICES is not JSON/
+
+  #-----------------------------------------------------------------------------
+  it "error - invalid port", ->
+
+    process.env.PORT = ":foo:)("
+
+    fn = -> appEnv = cfenv.getAppEnv()
+    console.log "expecting an error printed below:"
+    expect(fn).to.throwError /invalid PORT value:/
+
+  #-----------------------------------------------------------------------------
+  it "error - missing uris", ->
+
+    vcapApplication =
+        name: SampleName
+        host: "sample-host"
+
+    process.env.VCAP_APPLICATION = JSON.stringify vcapApplication
+
+    fn = -> appEnv = cfenv.getAppEnv()
+    console.log "expecting an error printed below:"
+    expect(fn).to.throwError /expecting VCAP_APPLICATION to contain uris when not runninng locally/
+
+#-------------------------------------------------------------------------------
+SampleVCAPServices_1 =
+  serviceLabel_1: [
+    {
+      name:            "serviceName_1"
+      label:           "serviceLabel_1"
+      credentials:
+          "credKey_1": "credVal_1"
+          "credKey_2": "credVal_2"
+          "credKey_3": "credVal_3"
+    }
+    {
+      name:            "serviceName_2"
+      label:           "serviceLabel_1"
+      credentials:
+          "credKey_A": "credVal_A"
+          "credKey_B": "credVal_B"
+          "credKey_C": "credVal_C"
+    }
+  ]
+  serviceLabel_2: [
+    {
+      name:            "serviceName_A"
+      label:           "serviceLabel_2"
+      credentials:
+          "credKey_4": "credVal_4"
+          "credKey_5": "credVal_5"
+          "credKey_6": "credVal_6"
+    }
+    {
+      name:            "serviceName_B"
+      label:           "serviceLabel_2"
+      credentials:
+          "credKey_D": "credVal_D"
+          "credKey_E": "credVal_E"
+          "credKey_F": "credVal_F"
+    }
+  ]
+
+#-------------------------------------------------------------------------------
+getVCAPServicesWithCreds = (name, creds) ->
+  label       = "#{name}-label"
+  credentials = JSON.parse JSON.stringify creds
+
+  services = {}
+  services[label] = []
+  services[label].push {name, label, credentials}
+
+  return {services}
 
 #-------------------------------------------------------------------------------
 JS = (object) -> JSON.stringify object
 JL = (object) -> JSON.stringify object, null, 4
-
-#-------------------------------------------------------------------------------
-setEnv = (fileName) ->
-  fileName = path.join __dirname, fileName
-  contents = fs.readFileSync fileName, "utf8"
-  env      = coffee.eval contents
-
-  for key in ["VCAP_APPLICATION", "VCAP_SERVICES"]
-    if env[key]?
-      env[key] = JSON.stringify env[key]
-
-  for key, val in env
-    env[key] = val
-
-  process.env = env
 
 #-------------------------------------------------------------------------------
 # Copyright IBM Corp. 2014

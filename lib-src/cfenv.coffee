@@ -3,6 +3,7 @@
 fs   = require "fs"
 URL  = require "url"
 
+pkg   = require "../package.json"
 _     = require "underscore"
 ports = require "ports"
 yaml  = require "js-yaml"
@@ -21,9 +22,15 @@ class AppEnv
 
   #-----------------------------------------------------------------------------
   constructor: (options = {}) ->
-    @app      = getApp options
-    @services = getServices options
     @isLocal  = not process.env.VCAP_APPLICATION?
+    unless @isLocal
+      try
+        JSON.parse process.env.VCAP_APPLICATION
+      catch
+        @isLocal = true
+
+    @app      = getApp      @, options
+    @services = getServices @, options
 
     @name     = getName @, options
     @port     = getPort @
@@ -66,6 +73,7 @@ class AppEnv
   #-----------------------------------------------------------------------------
   getServiceURL: (spec, replacements={}) ->
     service     = @getService spec
+
     credentials = service?.credentials
     return null unless credentials?
 
@@ -74,7 +82,7 @@ class AppEnv
     if replacements.url
       url = credentials[replacements.url]
     else
-      url = credentials.url
+      url = credentials.url || credentials.uri
 
     return null unless url?
 
@@ -92,43 +100,38 @@ class AppEnv
     return URL.format purl
 
 #-------------------------------------------------------------------------------
-getApp = (options) ->
-  val = options?.vcap?.application
-  return val if val?
-
+getApp = (appEnv, options) ->
   string = process.env.VCAP_APPLICATION
-  try
-    return JSON.parse string
-  catch e
-    return null
+
+  envValue = {}
+  if string?
+    try
+      envValue = JSON.parse string
+    catch e
+      throwError "env var VCAP_APPLICATION is not JSON: /#{string}/"
+
+  return envValue unless appEnv.isLocal
+
+  locValue = options?.vcap?.application
+  return locValue if locValue?
+  return envValue
 
 #-------------------------------------------------------------------------------
-getServices = (options) ->
-  val = options?.vcap?.services
-  return val if val?
-
+getServices = (appEnv, options) ->
   string = process.env.VCAP_SERVICES
-  try
-    return JSON.parse string
-  catch e
-    return null
 
-#-------------------------------------------------------------------------------
-getName = (appEnv, options) ->
-  return options.name if options.name?
+  envValue = {}
+  if string?
+    try
+      envValue = JSON.parse string
+    catch e
+      throwError "env var VCAP_SERVICES is not JSON: /#{string}/"
 
-  val = appEnv.app?.name
-  return val if val?
+  return envValue unless appEnv.isLocal
 
-  return null unless fs.existsSync "manifest.yml"
-
-  yString = fs.readFileSync "manifest.yml", "utf8"
-  yObject = yaml.safeLoad yString, filename: "manifest.yml"
-
-  yObject = yObject.applications[0] if yObject.applications?
-  return yObject.name if yObject.name?
-
-  return null
+  locValue = options?.vcap?.services
+  return locValue if locValue?
+  return envValue
 
 #-------------------------------------------------------------------------------
 getPort = (appEnv) ->
@@ -140,9 +143,34 @@ getPort = (appEnv) ->
     portString = "#{ports.getPort appEnv.name}"
 
   port = parseInt portString, 10
-  throw new Error "invalid port string: #{portString}" if isNaN port
+  throwError "invalid PORT value: /#{portString}/" if isNaN port
 
   return port
+
+#-------------------------------------------------------------------------------
+getName = (appEnv, options) ->
+  return options.name if options.name?
+
+  val = appEnv.app?.name
+  return val if val?
+
+  if fs.existsSync "manifest.yml"
+    yString = fs.readFileSync "manifest.yml", "utf8"
+    yObject = yaml.safeLoad yString, filename: "manifest.yml"
+
+    yObject = yObject.applications[0] if yObject.applications?
+    return yObject.name if yObject.name?
+
+  if fs.existsSync "package.json"
+    pString = fs.readFileSync "package.json", "utf8"
+    try
+      pObject = JSON.parse pString
+    catch
+      pObject = null
+
+    return pObject.name if pObject?.name
+
+  return null
 
 #-------------------------------------------------------------------------------
 getBind = (appEnv) ->
@@ -150,18 +178,34 @@ getBind = (appEnv) ->
 
 #-------------------------------------------------------------------------------
 getURLs = (appEnv, options) ->
+
   uris = appEnv.app?.uris
 
-  unless uris
-    protocol = options.protocol || "http:"
-    return [ "#{protocol}//localhost:#{appEnv.port}" ]
+  if appEnv.isLocal
+    uris = [ "localhost:#{appEnv.port}" ]
 
-  protocol = options.protocol || "https:"
+  else
+    unless uris?
+      throwError "expecting VCAP_APPLICATION to contain uris when not runninng locally"
+
+  protocol = options.protocol
+
+  unless protocol?
+    if appEnv.isLocal
+      protocol = "http:"
+    else
+      protocol = "https:"
 
   urls = for uri in uris
     "#{protocol}//#{uri}"
 
   return urls
+
+#-------------------------------------------------------------------------------
+throwError = (message) ->
+  message = "#{pkg.name}: #{message}"
+  console.log "error: #{message}"
+  throw new Error message
 
 #-------------------------------------------------------------------------------
 # Copyright IBM Corp. 2014

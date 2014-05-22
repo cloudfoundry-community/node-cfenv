@@ -2,7 +2,7 @@
     "name":                 "cfenv",
     "main":                 "./lib/cfenv",
     "description":          "easy access to your Cloud Foundry application environment",
-    "version":              "0.1.1",
+    "version":              "0.2.0",
     "author":               "pmuellr",
     "license":              "Apache-2.0",
     "homepage":             "https://github.com/cloudfoundry-community/node-cfenv",
@@ -17,7 +17,7 @@
     },
     "devDependencies": {
         "coffee-script":    "1.7.x",
-        "mocha":            "1.17.x",
+        "mocha":            "1.19.x",
         "expect.js":        "0.3.x"
     }
 }

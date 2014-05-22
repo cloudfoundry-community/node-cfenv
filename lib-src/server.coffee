@@ -9,7 +9,7 @@ exports.main = ->
   appEnv = cfenv.getAppEnv()
 
   dump = generateDump appEnv
-  console.log "#{dump}\n"
+  # console.log "#{dump}\n"
 
   server = http.createServer()
 

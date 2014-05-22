@@ -14,7 +14,7 @@ tasks = defineTasks exports,
     build: "build the server"
     test:  "run tests"
 
-WatchSpec = "lib-src/**/* tests/**/*"
+WatchSpec = "lib-src lib-src/* tests tests/*"
 
 #-------------------------------------------------------------------------------
 mkdir "-p", "tmp"
@@ -34,8 +34,6 @@ tasks.build = ->
         process.exit 1
 
     cleanDir "lib"
-
-    log "running build"
 
     log "- compiling server coffee files"
     coffee "--output lib lib-src"

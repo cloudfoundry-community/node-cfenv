@@ -72,8 +72,9 @@ The `options` parameter is optional, and can contain the following properties:
 
   If not specified, the name will looked for in the following places:
 
-  * the `application_name` property of the `VCAP_APPLICATION` environment variable
-  * the `name` property from the`manifest.yml` file in the current directory
+  * the `name` property of the `VCAP_APPLICATION` environment variable
+  * the `name` property from the `manifest.yml` file in the current directory
+  * the `name` property from the `package.json` file in the current directory
 
 * `protocol` - protocol used in the generated URLs
 
@@ -86,6 +87,9 @@ The `options` parameter is optional, and can contain the following properties:
   environment variable, when running locally.  The object can have
   properties `application` and/or `services`, whose values are the same
   as the values serialized in the respective environment variables.
+
+  Note that the `url` and `urls` properties of the returned object are not
+  based on the vcap `application` object, when running locally.
 
   This option property is ignored if not running locally.
 
@@ -250,6 +254,16 @@ Assume you run the following code:
 
 The `url` result will be `https://userid:passw0rd@example.com/database`
 
+Note that there **MUST** be a `url` property in the credentials,
+or replacement for it, in the
+service, or the call will return `null`.  Also, because the `url` is parsed
+first with `url.parse()`, there will be a `host` property in the result, so
+you won't be able to use the `hostname` and `port` values directly.  You
+can **ONLY** set the resultant hostname and port with the `host` property.
+
+Since the `appEnv.getServiceURL()` method operates against the
+`appEnv.services` property, you can fudge this object if that makes your
+life easier.
 
 
 testing with Cloud Foundry
