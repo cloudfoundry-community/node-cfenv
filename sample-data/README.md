@@ -42,7 +42,7 @@ Some sample data for a node app which is bound to a mongodb service.
 		    "OLDPWD": "/home/vcap"
 		}
 
-## `cf-env.getCore()`
+## `cfenv.getAppEnv()`
 
 		{
 		    "app": {
@@ -103,10 +103,11 @@ Some sample data for a node app which is bound to a mongodb service.
 		    "urls": [
 		        "https://<cf-host>.<cf-domain>"
 		    ],
-		    "url": "https://<cf-host>.<cf-domain>"
+		    "url": "https://<cf-host>.<cf-domain>",
+		    "isLocal": false
 		}
 
-## `cf-env.getServices`
+## `appEnv.getServices()`
 
 		{
 		    "my-db": {
