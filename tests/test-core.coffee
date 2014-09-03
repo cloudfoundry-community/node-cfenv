@@ -191,6 +191,48 @@ describe "appEnv", ->
     expect(url).to.be "org-protocol://org-host:666/org-path"
 
   #-----------------------------------------------------------------------------
+  it "local - getServiceCreds()", ->
+
+    #-------------------------------------------
+    vcap = getVCAPServicesWithCreds "service-a",
+      url: "foo"
+
+    appEnv = cfenv.getAppEnv {vcap}
+    creds  = appEnv.getServiceCreds "service-b"
+    expect(creds).to.be null
+
+    #-------------------------------------------
+    vcap = getVCAPServicesWithCreds "service-a",
+      url: "foo"
+
+    vcap["services"]["service-a-label"][0].credentials = null
+
+    appEnv = cfenv.getAppEnv {vcap}
+    creds  = appEnv.getServiceCreds "service-a"
+    creds  = JSON.stringify(creds)
+    expect(creds).to.be '{}'
+
+    #-------------------------------------------
+    vcap = getVCAPServicesWithCreds "service-a",
+      url: "foo"
+
+    delete vcap["services"]["service-a-label"][0].credentials
+
+    appEnv = cfenv.getAppEnv {vcap}
+    creds  = appEnv.getServiceCreds "service-a"
+    creds  = JSON.stringify(creds)
+    expect(creds).to.be '{}'
+
+    #-------------------------------------------
+    vcap = getVCAPServicesWithCreds "service-a",
+      url: "foo"
+
+    appEnv = cfenv.getAppEnv {vcap}
+    creds  = appEnv.getServiceCreds "service-a"
+    creds  = JSON.stringify(creds)
+    expect(creds).to.be '{"url":"foo"}'
+
+  #-----------------------------------------------------------------------------
   it "remote - VCAP_APPLICATION", ->
 
     vcap =

@@ -109,6 +109,7 @@ The returned object also has the following methods available:
 * `appEnv.getServices()`
 * `appEnv.getService(spec)`
 * `appEnv.getServiceURL(spec, replacements)`
+* `appEnv.getServiceCreds(spec)`
 
 If no value can be determined for `port`, and the `name` property on the
 `options` parameter is not set and cannot be determined,
@@ -194,7 +195,7 @@ Returns the service object from VCAP_SERVICES or null if not found.
 
 
 
-`appEnv.getServiceURL(spec, replacements)`
+**`appEnv.getServiceURL(spec, replacements)`**
 --------------------------------------------------------------------------------
 
 Returns a service URL by name.
@@ -264,6 +265,21 @@ can **ONLY** set the resultant hostname and port with the `host` property.
 Since the `appEnv.getServiceURL()` method operates against the
 `appEnv.services` property, you can fudge this object if that makes your
 life easier.
+
+**`appEnv.getServiceCreds(spec)`**
+--------------------------------------------------------------------------------
+
+Returns the `credentials` object of a service by name.
+
+The `spec` parameter is the same as that used by the `appEnv.getServiceURL()`
+method.  If there is no service that matches the `spec` parameter, this method
+will return `null`.
+
+If there is a service that matches the `spec` parameter, the value of it's
+`credentials` property will be returned.  If for some reason, there is no
+`credentials` property on the service, an empty object - `{}` - will be
+returned.
+
 
 
 testing with Cloud Foundry

@@ -2,7 +2,7 @@
     "name":                 "cfenv",
     "main":                 "./lib/cfenv",
     "description":          "easy access to your Cloud Foundry application environment",
-    "version":              "0.2.0",
+    "version":              "1.0.0",
     "author":               "pmuellr",
     "license":              "Apache-2.0",
     "homepage":             "https://github.com/cloudfoundry-community/node-cfenv",
@@ -11,13 +11,13 @@
         "url":              "https://github.com/cloudfoundry-community/node-cfenv.git"
     },
     "dependencies": {
-        "js-yaml":          "3.0.x",
+        "js-yaml":          "3.2.x",
         "ports":            "1.1.x",
-        "underscore":       "1.6.x"
+        "underscore":       "1.7.x"
     },
     "devDependencies": {
-        "coffee-script":    "1.7.x",
-        "mocha":            "1.19.x",
+        "coffee-script":    "1.8.x",
+        "mocha":            "1.21.x",
         "expect.js":        "0.3.x"
     }
 }

@@ -99,6 +99,13 @@ class AppEnv
 
     return URL.format purl
 
+  #-----------------------------------------------------------------------------
+  getServiceCreds: (spec) ->
+    service     = @getService spec
+    return null unless service?
+
+    return service.credentials || {}
+
 #-------------------------------------------------------------------------------
 getApp = (appEnv, options) ->
   string = process.env.VCAP_APPLICATION
