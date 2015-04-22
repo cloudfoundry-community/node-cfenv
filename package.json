@@ -6,6 +6,9 @@
     "author":               "pmuellr",
     "license":              "Apache-2.0",
     "homepage":             "https://github.com/cloudfoundry-community/node-cfenv",
+    "bin": {
+        "cfenv-launch":     "./bin/cfenv-launch"
+    },
     "repository": {
         "type":             "git",
         "url":              "https://github.com/cloudfoundry-community/node-cfenv.git"
@@ -13,7 +16,7 @@
     "dependencies": {
         "js-yaml":          "3.2.x",
         "ports":            "1.1.x",
-        "underscore":       "1.7.x"
+        "underscore":       "1.8.x"
     },
     "devDependencies": {
         "coffee-script":    "1.8.x",
