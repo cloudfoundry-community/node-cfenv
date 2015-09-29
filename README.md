@@ -149,7 +149,7 @@ For example, assume VCAP_SERVICES was set to the following:
     {
         "user-provided": [
             {
-                "name": "cfenv-test",
+                "name": "cf-env-test",
                 "label": "user-provided",
                 "tags": [],
                 "credentials": {
@@ -167,8 +167,8 @@ In this case, `appEnv.services` would be set to that same object, but
 `appEnv.getServices()` would return
 
     {
-        "cfenv-test": {
-            "name": "cfenv-test",
+        "cf-env-test": {
+            "name": "cf-env-test",
             "label": "user-provided",
             "tags": [],
             "credentials": {
@@ -232,7 +232,7 @@ For example, assume VCAP_SERVICES was set to the following:
     {
         "user-provided": [
             {
-                "name": "cfenv-test",
+                "name": "cf-env-test",
                 "label": "user-provided",
                 "tags": [],
                 "credentials": {
@@ -248,7 +248,7 @@ For example, assume VCAP_SERVICES was set to the following:
 
 Assume you run the following code:
 
-    url = appEnv.getServiceURL("cfenv-test", {
+    url = appEnv.getServiceURL("cf-env-test", {
         pathname: "database",
         auth:     ["username", "password"]
     })
@@ -287,9 +287,9 @@ testing with Cloud Foundry
 
 You can push this project as a Cloud Foundry project to try it out.
 
-First, create a service name `cfenv-test` with the following command:
+First, create a service name `cf-env-test` with the following command:
 
-    cf cups cfenv-test -p "url, username, password, database"
+    cf cups cf-env-test -p "url, username, password, database"
 
 You will be prompted for these values; enter something reasonable like:
 
@@ -334,6 +334,19 @@ with no arguments to see what tasks are available, along with a short
 description of them.
 
 
+changes
+================================================================================
+
+**1.0.1** - 2014/09/29
+
+- remove node_modules from .cfignore - [issue #8](https://github.com/cloudfoundry-community/node-cfenv/issues/8)
+- updated package dependencies
+- changed README.md to correct sample service to cf-env-test
+- files in lib/ recompiled due to coffee-script update
+
+**1.0.0** - 2014/09/03
+
+- initial 1.0.0 release
 
 license
 ================================================================================
