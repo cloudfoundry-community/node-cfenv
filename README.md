@@ -337,6 +337,11 @@ description of them.
 changes
 ================================================================================
 
+**1.0.2** - 2014/09/29
+
+- delete a lingering `npm-debug.log` left behind
+- add `npm-debug.log` to `.gitignore`
+
 **1.0.1** - 2014/09/29
 
 - remove node_modules from .cfignore - [issue #8](https://github.com/cloudfoundry-community/node-cfenv/issues/8)
