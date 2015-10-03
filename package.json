@@ -2,7 +2,7 @@
     "name":                 "cfenv",
     "main":                 "./lib/cfenv",
     "description":          "easy access to your Cloud Foundry application environment",
-    "version":              "1.0.2",
+    "version":              "1.0.3",
     "author":               "pmuellr",
     "license":              "Apache-2.0",
     "homepage":             "https://github.com/cloudfoundry-community/node-cfenv",

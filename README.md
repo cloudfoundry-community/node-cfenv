@@ -12,7 +12,6 @@ If not set, the functions run in "local" mode, otherwise they run in "cloud"
 mode.
 
 
-
 quick start
 ================================================================================
 
@@ -31,7 +30,6 @@ This code snippet above will get the port, binding host, and full URL to your HT
 server and use them to bind the server and print the server URL when starting.
 
 
-
 running in Cloud Foundry vs locally
 ================================================================================
 
@@ -48,12 +46,10 @@ it will provide useful values when you're running in Cloud Foundry AND
 when you're running locally.
 
 
-
 api
 ================================================================================
 
 The `cfenv` package exports the following function:
-
 
 
 `getAppEnv(options)`
@@ -126,6 +122,8 @@ is running locally, and `https:` otherwise; you can
 force a particular protocol by using the `protocol` property
 on the `options` parameter.
 
+When running in Cloud Foundry, the `url` and `urls` values will have
+`localhost` as their hostname, if the actual hostnames cannot be determined.
 
 
 AppEnv methods
@@ -303,39 +301,14 @@ Next, push the app with `cf push`.
 When you visit the site, you'll see the output of various cfenv calls.
 
 
-
-hacking
-================================================================================
-
-If you want to modify the source to play with it, you'll also want to have the
-`jbuild` program installed.
-
-To install `jbuild` on Windows, use the command
-
-    npm -g install jbuild
-
-To install `jbuild` on Mac or Linux, use the command
-
-    sudo npm -g install jbuild
-
-The `jbuild` command runs tasks defined in the `jbuild.coffee` file.  The
-task you will most likely use is `watch`, which you can run with the
-command:
-
-    jbuild watch
-
-When you run this command, the application will be built from source, the server
-started, and tests run.  When you subsequently edit and then save one of the
-source files, the application will be re-built, the server re-started, and the
-tests re-run.  For ever.  Use Ctrl-C to exit the `jbuild watch` loop.
-
-You can run those build, server, and test tasks separately.  Run `jbuild`
-with no arguments to see what tasks are available, along with a short
-description of them.
-
-
 changes
 ================================================================================
+
+**1.0.3** - 2014/10/02
+
+- fixes for compatibility with Diego - [issue #11][]
+
+[issue #11]: https://github.com/cloudfoundry-community/node-cfenv/issues/11
 
 **1.0.2** - 2014/09/29
 
@@ -344,14 +317,17 @@ changes
 
 **1.0.1** - 2014/09/29
 
-- remove node_modules from .cfignore - [issue #8](https://github.com/cloudfoundry-community/node-cfenv/issues/8)
+- remove node_modules from .cfignore - [issue #8][]
 - updated package dependencies
 - changed README.md to correct sample service to cf-env-test
 - files in lib/ recompiled due to coffee-script update
 
+[issue #8]: https://github.com/cloudfoundry-community/node-cfenv/issues/8
+
 **1.0.0** - 2014/09/03
 
 - initial 1.0.0 release
+
 
 license
 ================================================================================

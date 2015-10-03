@@ -142,7 +142,7 @@ getServices = (appEnv, options) ->
 
 #-------------------------------------------------------------------------------
 getPort = (appEnv) ->
-  portString = process.env.VCAP_APP_PORT || process.env.PORT
+  portString = process.env.PORT || process.env.CF_INSTANCE_PORT || process.env.VCAP_APP_PORT
 
   unless portString?
     return 3000 unless appEnv.name?
@@ -193,7 +193,7 @@ getURLs = (appEnv, options) ->
 
   else
     unless uris?
-      throwError "expecting VCAP_APPLICATION to contain uris when not runninng locally"
+      uris = [ "localhost" ]
 
   protocol = options.protocol
 

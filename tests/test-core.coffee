@@ -404,17 +404,59 @@ describe "appEnv", ->
     expect(fn).to.throwError /invalid PORT value:/
 
   #-----------------------------------------------------------------------------
-  it "error - missing uris", ->
+  it "Diego - use localhost in url", ->
 
+    # VCAP_APPLICATION with no uris/uri in it
     vcapApplication =
         name: SampleName
         host: "sample-host"
 
     process.env.VCAP_APPLICATION = JSON.stringify vcapApplication
 
-    fn = -> appEnv = cfenv.getAppEnv()
-    console.log "expecting an error printed below:"
-    expect(fn).to.throwError /expecting VCAP_APPLICATION to contain uris when not runninng locally/
+    appEnv = cfenv.getAppEnv()
+
+    expect(appEnv.isLocal).to.be     false
+    expect(appEnv.urls.length).to.be 1
+    expect(appEnv.url).to.be         "https://localhost"
+
+  #-----------------------------------------------------------------------------
+  it "env PORT", ->
+    vcapApplication =
+        name: SampleName
+        host: "sample-host"
+
+    process.env.VCAP_APPLICATION = JSON.stringify vcapApplication
+    process.env.PORT             = "4000"
+
+    appEnv = cfenv.getAppEnv()
+
+    expect(appEnv.port).to.be 4000
+
+  #-----------------------------------------------------------------------------
+  it "env CF_INSTANCE_PORT", ->
+    vcapApplication =
+        name: SampleName
+        host: "sample-host"
+
+    process.env.VCAP_APPLICATION = JSON.stringify vcapApplication
+    process.env.CF_INSTANCE_PORT = "4001"
+
+    appEnv = cfenv.getAppEnv()
+
+    expect(appEnv.port).to.be 4001
+
+  #-----------------------------------------------------------------------------
+  it "env VCAP_APP_PORT", ->
+    vcapApplication =
+        name: SampleName
+        host: "sample-host"
+
+    process.env.VCAP_APPLICATION = JSON.stringify vcapApplication
+    process.env.VCAP_APP_PORT    = "4002"
+
+    appEnv = cfenv.getAppEnv()
+
+    expect(appEnv.port).to.be 4002
 
 #-------------------------------------------------------------------------------
 SampleVCAPServices_1 =
