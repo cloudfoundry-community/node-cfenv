@@ -98,7 +98,7 @@ This function returns an object with the following properties:
 * `bind`:     hostname/ip address for binding
 * `urls`:     URLs used to access the servers
 * `url`:      first URL in `urls`
-* `isLocal`:  true if a valid `VCAP_APPLICATION` env var was found, false otherwise
+* `isLocal`:  false if a valid `VCAP_APPLICATION` env var was found, true otherwise
 
 The returned object also has the following methods available:
 
