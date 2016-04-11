@@ -106,6 +106,7 @@ The returned object also has the following methods available:
 * `appEnv.getService(spec)`
 * `appEnv.getServiceURL(spec, replacements)`
 * `appEnv.getServiceCreds(spec)`
+* `appEnv.getServiceCredsByLabel(spec)`
 
 If no value can be determined for `port`, and the `name` property on the
 `options` parameter is not set and cannot be determined,
@@ -285,7 +286,20 @@ If there is a service that matches the `spec` parameter, the value of it's
 `credentials` property on the service, an empty object - `{}` - will be
 returned.
 
+**`appEnv.getServiceCredsByLabel(spec)`**
+--------------------------------------------------------------------------------
 
+Returns the `credentials` object of a service by label.
+
+The `spec` parameter is similar to that used by the
+`appEnv.getServiceURL()` method except matching by label instead of by name.
+If there is no service whose label matches the `spec` parameter,
+this method will return `null`.
+
+If there is a service whose label matches the `spec` parameter, the value of
+it's `credentials` property will be returned.  If for some reason, there is no
+`credentials` property on the service, an empty object - `{}` - will be
+returned.
 
 testing with Cloud Foundry
 ================================================================================
