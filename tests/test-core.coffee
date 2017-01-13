@@ -190,6 +190,16 @@ describe "appEnv", ->
 
     expect(url).to.be "org-protocol://org-host:666/org-path"
 
+    #-------------------------------------------
+    testURL = "mongodb://user:pass@example.com:18394,example.com:18394/admin"
+    vcap = getVCAPServicesWithCreds "service-a",
+      uri: testURL
+
+    appEnv = cfenv.getAppEnv {vcap}
+    url    = appEnv.getServiceURL "service-a"
+
+    expect(url).to.be testURL
+
   #-----------------------------------------------------------------------------
   it "local - getServiceCreds()", ->
 
@@ -294,7 +304,7 @@ describe "appEnv", ->
     expect(appEnv.url).to.be         "https://sample-uri.example.com"
 
     url = appEnv.getServiceURL "service-a"
-    expect(url).to.be          "http://example.com/"
+    expect(url).to.be          "http://example.com"
 
 #-----------------------------------------------------------------------------
   it "name - from option", ->

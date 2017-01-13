@@ -88,6 +88,8 @@ class AppEnv
 
     delete replacements.url
 
+    return url if _.isEmpty replacements
+
     purl = URL.parse url
 
     for key, value of replacements
