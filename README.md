@@ -260,6 +260,13 @@ first with `url.parse()`, there will be a `host` property in the result, so
 you won't be able to use the `hostname` and `port` values directly.  You
 can **ONLY** set the resultant hostname and port with the `host` property.
 
+Note that `url.parse()` and the later `url.format()` calls to construct the
+result, will not produce pleasing results for "unusual" URLs, especially
+those which do not use `http:` or `https:` protocols.  The `url` `parse()`
+and `format()` methods will not be used though, if you have no replacement
+values, or the only replacement property is `url`, and so are safe to
+use in that case.
+
 Since the `appEnv.getServiceURL()` method operates against the
 `appEnv.services` property, you can fudge this object if that makes your
 life easier.
@@ -303,6 +310,12 @@ When you visit the site, you'll see the output of various cfenv calls.
 
 changes
 ================================================================================
+
+**1.0.4** - 2017/01/13
+
+- fix to getServiceURL() with non-http URLs  - [issue #21][]
+
+[issue #21]: https://github.com/cloudfoundry-community/node-cfenv/issues/21
 
 **1.0.3** - 2014/10/02
 
