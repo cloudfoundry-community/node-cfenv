@@ -69,6 +69,23 @@ class AppEnv
 
     # no matches
     return null
+  #-----------------------------------------------------------------------------
+  getServiceByLabel: (spec) ->
+
+    # set our matching function
+    if _.isRegExp spec
+      matches = (label) -> label.match spec
+    else
+      spec = "#{spec}"
+      matches = (label) -> label is spec
+
+    services = @getServices()
+    for label, service of services
+      if matches label
+        return service
+
+    # no matches
+    return null
 
   #-----------------------------------------------------------------------------
   getServiceURL: (spec, replacements={}) ->
@@ -104,6 +121,12 @@ class AppEnv
   #-----------------------------------------------------------------------------
   getServiceCreds: (spec) ->
     service     = @getService spec
+    return null unless service?
+
+    return service.credentials || {}
+  #-----------------------------------------------------------------------------
+  getServiceCredsByLabel: (spec) ->
+    service     = @getServiceByLabel spec
     return null unless service?
 
     return service.credentials || {}

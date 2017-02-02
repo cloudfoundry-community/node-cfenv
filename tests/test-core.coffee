@@ -241,6 +241,37 @@ describe "appEnv", ->
     creds  = appEnv.getServiceCreds "service-a"
     creds  = JSON.stringify(creds)
     expect(creds).to.be '{"url":"foo"}'
+  #-----------------------------------------------------------------------------
+  it "local - getServiceCredsByLabel()", ->
+
+    #-------------------------------------------
+    vcap = getVCAPServicesWithCreds "service-a",
+      url: "foo"
+
+    appEnv = cfenv.getAppEnv {vcap}
+    creds  = appEnv.getServiceCredsByLabel "service-b"
+    expect(creds).to.be null
+    #-------------------------------------------
+    vcap = getVCAPServicesWithCreds "service-a",
+      url: "foo"
+
+    appEnv = cfenv.getAppEnv {vcap}
+    creds  = appEnv.getServiceCredsByLabel "service-a"
+    expect(creds).to.eql {url:"foo"}
+    #-------------------------------------------
+    vcap = getVCAPServicesWithCreds "service-a",
+      url: "foo"
+
+    appEnv = cfenv.getAppEnv {vcap}
+    creds  = appEnv.getServiceCredsByLabel /service.*/
+    expect(creds).to.eql {url:"foo"}
+    #-------------------------------------------
+    vcap = getVCAPServicesWithCreds "service-a",
+      url: "foo"
+
+    appEnv = cfenv.getAppEnv {vcap}
+    creds  = appEnv.getServiceCredsByLabel /disservice.*/
+    expect(creds).to.be null
 
   #-----------------------------------------------------------------------------
   it "remote - VCAP_APPLICATION", ->
