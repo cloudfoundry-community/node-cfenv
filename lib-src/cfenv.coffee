@@ -29,6 +29,8 @@ class AppEnv
       catch
         @isLocal = true
 
+    @_getVcapFromFile(options) if @isLocal
+
     @app      = getApp      @, options
     @services = getServices @, options
 
@@ -37,6 +39,26 @@ class AppEnv
     @bind     = getBind @
     @urls     = getURLs @, options
     @url      = @urls[0]
+
+  #-----------------------------------------------------------------------------
+  _getVcapFromFile: (options) ->
+    return if not options?.vcapFile
+
+    contents = null
+    try
+      contents = fs.readFileSync options.vcapFile, 'utf8'
+    catch err
+      console.log "error reading vcapFile '#{options.vcapFile}': #{err}; ignoring"
+      return
+
+    vcap = null
+    try
+      vcap = JSON.parse contents
+    catch err
+      console.log "error parsing vcapFile '#{options.vcapFile}': #{err}; ignoring"
+      return
+
+    options.vcap = vcap
 
   #-----------------------------------------------------------------------------
   toJSON: ->

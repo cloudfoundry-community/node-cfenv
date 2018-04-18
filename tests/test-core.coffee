@@ -4,7 +4,7 @@ fs   = require "fs"
 path = require "path"
 
 _      = require "underscore"
-coffee = require "coffee-script"
+coffee = require "coffeescript"
 expect = require "expect.js"
 ports  = require "ports"
 
@@ -238,6 +238,36 @@ describe "appEnv", ->
       url: "foo"
 
     appEnv = cfenv.getAppEnv {vcap}
+    creds  = appEnv.getServiceCreds "service-a"
+    creds  = JSON.stringify(creds)
+    expect(creds).to.be '{"url":"foo"}'
+
+  #-----------------------------------------------------------------------------
+  it "local - with vcapFile option", ->
+
+    #-------------------------------------------
+    vcapFile = path.join(__dirname, 'fixtures', 'vcap-local-good.json')
+
+    appEnv = cfenv.getAppEnv {vcapFile}
+    creds  = appEnv.getServiceCreds "service-a"
+    creds  = JSON.stringify(creds)
+    expect(creds).to.be '{"url":"foo"}'
+
+    #-------------------------------------------
+    vcapFile = path.join(__dirname, 'fixtures', 'vcap-local-bad.json')
+
+    console.log "expecting an error printed below:"
+    appEnv = cfenv.getAppEnv {vcapFile}
+    creds  = appEnv.getServiceCreds "service-a"
+    expect(creds).to.be null
+
+    #-------------------------------------------
+    vcap = getVCAPServicesWithCreds "service-a",
+      url: "bar"
+
+    vcapFile = path.join(__dirname, 'fixtures', 'vcap-local-good.json')
+
+    appEnv = cfenv.getAppEnv {vcap, vcapFile}
     creds  = appEnv.getServiceCreds "service-a"
     creds  = JSON.stringify(creds)
     expect(creds).to.be '{"url":"foo"}'

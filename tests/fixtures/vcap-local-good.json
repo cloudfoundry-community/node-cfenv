@@ -1,0 +1,13 @@
+{
+    "services": {
+        "service-a-label": [
+            {
+                "name": "service-a",
+                "label": "service-a-label",
+                "credentials": {
+                    "url": "foo"
+                }
+            }
+        ]
+    }
+}

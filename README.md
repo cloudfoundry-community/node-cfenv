@@ -43,7 +43,9 @@ your application is running in Cloud Foundry.  These include:
 If these aren't set, the `getAppEnv()` API will still return useful values,
 as appropriate.  This means you can use this package in your program and
 it will provide useful values when you're running in Cloud Foundry AND
-when you're running locally.
+when you're running locally.  You can supply local versions of
+`VCAP_SERVICES` and/or `VCAP_APPLICATION` by using the `vcap` and `vcapFile`
+options described below.
 
 
 api
@@ -86,6 +88,16 @@ The `options` parameter is optional, and can contain the following properties:
 
   Note that the `url` and `urls` properties of the returned object are not
   based on the vcap `application` object, when running locally.
+
+  This option property is ignored if not running locally.
+
+* `vcapFile` - provide the same function as the `vcap` option, but instead of
+  setting the option value to an object, you set it to the name of a JSON
+  file, which will be parsed and used as the `vcap` option value is used,
+  as described above.
+
+  When both `vcap` and `vcapFile` options are provided, the values in `vcap`
+  are ignored.
 
   This option property is ignored if not running locally.
 
@@ -311,6 +323,12 @@ When you visit the site, you'll see the output of various cfenv calls.
 changes
 ================================================================================
 
+**1.1.0** - 2018/04/18
+
+- add the `vcapFile` option - [issue #31][]
+
+[issue #31]: https://github.com/cloudfoundry-community/node-cfenv/issues/31
+
 **1.0.4** - 2017/01/13
 
 - fix to getServiceURL() with non-http URLs  - [issue #21][]
@@ -340,6 +358,13 @@ changes
 **1.0.0** - 2014/09/03
 
 - initial 1.0.0 release
+
+
+contributing
+================================================================================
+
+See the [CONTRIBUTING.md](CONTRIBUTING.md) doc for more information on
+contributing to this project.
 
 
 license
