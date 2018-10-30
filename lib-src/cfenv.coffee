@@ -166,7 +166,7 @@ getServices = (appEnv, options) ->
 
 #-------------------------------------------------------------------------------
 getPort = (appEnv) ->
-  portString = process.env.PORT || process.env.CF_INSTANCE_PORT || process.env.VCAP_APP_PORT || AppEnv?.app?.port
+  portString = process.env.PORT || process.env.CF_INSTANCE_PORT || process.env.VCAP_APP_PORT || appEnv?.app?.port
 
   unless portString?
     return 3000 unless appEnv.name?
