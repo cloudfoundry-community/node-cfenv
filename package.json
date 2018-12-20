@@ -19,7 +19,7 @@
     "dependencies": {
         "js-yaml": "3.11.x",
         "ports": "1.1.x",
-        "underscore": "1.8.x"
+        "underscore": "1.9.x"
     },
     "devDependencies": {
         "coffeescript": "1.12.x",
