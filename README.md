@@ -325,6 +325,16 @@ When you visit the site, you'll see the output of various cfenv calls.
 changes
 ================================================================================
 
+**1.2.0** - 2019/02/21
+
+- use vcapFile port value if available - [pr #36][]
+- upgrade underscore from 1.8.x to 1.9.x - [pr #37][]
+- use `random-route:` instead of `${random-word}` in sample manifest - [pr #38][]
+
+[pr #36]: https://github.com/cloudfoundry-community/node-cfenv/pull/36
+[pr #37]: https://github.com/cloudfoundry-community/node-cfenv/pull/37
+[pr #38]: https://github.com/cloudfoundry-community/node-cfenv/pull/38
+
 **1.1.0** - 2018/04/18
 
 - add the `vcapFile` option - [issue #31][]
