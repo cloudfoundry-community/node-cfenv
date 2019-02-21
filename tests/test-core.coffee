@@ -252,6 +252,7 @@ describe "appEnv", ->
     creds  = appEnv.getServiceCreds "service-a"
     creds  = JSON.stringify(creds)
     expect(creds).to.be '{"url":"foo"}'
+    expect(appEnv.port).to.be 42
 
     #-------------------------------------------
     vcapFile = path.join(__dirname, 'fixtures', 'vcap-local-bad.json')

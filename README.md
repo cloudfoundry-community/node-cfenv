@@ -101,7 +101,9 @@ The `options` parameter is optional, and can contain the following properties:
 
   This option property is ignored if not running locally.
 
-This function returns an object with the following properties:
+#### return value
+
+The `getAppEnv()` function returns an object with the following properties:
 
 * `app`:      object version of `VCAP_APPLICATION` env var
 * `services`: object version of `VCAP_SERVICES` env var
