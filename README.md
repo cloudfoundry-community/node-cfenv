@@ -325,6 +325,12 @@ When you visit the site, you'll see the output of various cfenv calls.
 changes
 ================================================================================
 
+**1.2.1** - 2019/03/25
+
+- upgrade js-yaml to avoid vulnerability - [pr #39][]
+
+[pr #39]: https://github.com/cloudfoundry-community/node-cfenv/pull/39
+
 **1.2.0** - 2019/02/21
 
 - use vcapFile port value if available - [pr #36][]
