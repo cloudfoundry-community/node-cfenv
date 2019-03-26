@@ -325,6 +325,12 @@ When you visit the site, you'll see the output of various cfenv calls.
 changes
 ================================================================================
 
+**1.2.2** - 2019/03/26
+
+- handle ports package race condition by returning port 3000 - [pr #41][]
+
+[pr #41]: https://github.com/cloudfoundry-community/node-cfenv/pull/41
+
 **1.2.1** - 2019/03/25
 
 - upgrade js-yaml to avoid vulnerability - [pr #39][]
