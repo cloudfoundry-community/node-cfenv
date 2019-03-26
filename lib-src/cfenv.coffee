@@ -174,7 +174,10 @@ getPort = (appEnv) ->
   unless portString?
     return 3000 unless appEnv.name?
 
-    portString = "#{ports.getPort appEnv.name}"
+    try
+      portString = "#{ports.getPort appEnv.name}"
+    catch e
+      portString = '3000'
 
   port = parseInt portString, 10
   throwError "invalid PORT value: /#{portString}/" if isNaN port
