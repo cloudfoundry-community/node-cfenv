@@ -325,6 +325,26 @@ When you visit the site, you'll see the output of various cfenv calls.
 changes
 ================================================================================
 
+**1.2.4** - 2021/04/03
+
+- upgrade most dependencies, but not CoffeeScript, since the latest
+  version generates code that can't be run in older versions of node - [pr #50][]
+
+- change to call `yaml.load()` instead of `yaml.safeLoad()` since it's no
+  longer supported, noticed via an error message: - [pr #50][]
+
+  ```
+  Error: Function yaml.safeLoad is removed in js-yaml 4. Use yaml.load instead, which is now safe by default.
+  ```
+
+[pr #50]: https://github.com/cloudfoundry-community/node-cfenv/pull/50
+
+**1.2.3** - 2020/07/24
+
+- remove `.cfignore` file - [commit #02bb92d][]
+
+[commit #02bb92d]: https://github.com/cloudfoundry-community/node-cfenv/commit/02bb92dacf5f59244b188dae11fd2fe732c4940e
+
 **1.2.2** - 2019/03/26
 
 - handle ports package race condition by returning port 3000 - [pr #41][]
