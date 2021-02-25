@@ -193,7 +193,7 @@ getName = (appEnv, options) ->
 
   if fs.existsSync "manifest.yml"
     yString = fs.readFileSync "manifest.yml", "utf8"
-    yObject = yaml.safeLoad yString, filename: "manifest.yml"
+    yObject = yaml.load yString, filename: "manifest.yml"
 
     yObject = yObject.applications[0] if yObject.applications?
     return yObject.name if yObject.name?

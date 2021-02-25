@@ -11,6 +11,16 @@ Cloud Foundry app, based on whether the `VCAP_APPLICATION` environment variable 
 If not set, the functions run in "local" mode, otherwise they run in "cloud"
 mode.
 
+### upgrading to version 2.0.0
+
+Version 2.0.0 is an upgrade to the package dependencies, including CoffeeScript.
+The new version of CoffeeScript generates code which may not work in older 
+versions of node.js.  For more info, see this note on the CoffeeScript page:
+https://coffeescript.org/#compatibility
+
+If you're running an older version of node.js (before 7.6), you should stick to
+the 1.* version of this package.
+
 
 quick start
 ================================================================================
@@ -324,6 +334,10 @@ When you visit the site, you'll see the output of various cfenv calls.
 
 changes
 ================================================================================
+
+**2.0.0** - 2021/02/25
+
+- upgrade a lot of dependencies, including CoffeeScript
 
 **1.2.2** - 2019/03/26
 

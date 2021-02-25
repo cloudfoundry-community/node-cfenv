@@ -68,7 +68,7 @@ tasks.test = ->
         ui:         "bdd"
         reporter:   "spec"
         slow:       300
-        compilers:  "coffee:coffeescript"
+    #   compilers:  "coffee:coffeescript"
         require:    "coffeescript/register"
 
     options = for key, val of options
