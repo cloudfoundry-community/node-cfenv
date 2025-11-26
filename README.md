@@ -325,6 +325,12 @@ When you visit the site, you'll see the output of various cfenv calls.
 changes
 ================================================================================
 
+**1.2.5** - 2025/11/26
+
+- upgrade js-yaml to avoid vulnerability - [pr #55][]
+
+[pr #55]: https://github.com/cloudfoundry-community/node-cfenv/pull/55
+
 **1.2.4** - 2021/04/03
 
 - upgrade most dependencies, but not CoffeeScript, since the latest
