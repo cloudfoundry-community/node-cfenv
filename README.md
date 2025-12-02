@@ -327,7 +327,9 @@ changes
 
 **1.2.5** - 2025/12/01
 
-- upgrade `js.yaml` to 4.1.x for [CVE-2025-64718][]
+- upgrade `js.yaml` to 4.1.x for [CVE-2025-64718][] - [pr #56][]
+
+[pr #56]: https://github.com/cloudfoundry-community/node-cfenv/pull/56
 
 [CVE-2025-64718]: https://www.cve.org/CVERecord?id=CVE-2025-64718
 
