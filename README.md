@@ -325,6 +325,12 @@ When you visit the site, you'll see the output of various cfenv calls.
 changes
 ================================================================================
 
+**1.2.5** - 2025/12/01
+
+- upgrade `js.yaml` to 4.1.x for [CVE-2025-64718][]
+
+[CVE-2025-64718]: https://www.cve.org/CVERecord?id=CVE-2025-64718
+
 **1.2.4** - 2021/04/03
 
 - upgrade most dependencies, but not CoffeeScript, since the latest
