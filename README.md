@@ -325,6 +325,13 @@ When you visit the site, you'll see the output of various cfenv calls.
 changes
 ================================================================================
 
+**1.2.7** - 2026/07/27
+
+- upgrade `underscore` to `^1.13.8` to address [`CVE-2026-27601`](https://nvd.nist.gov/vuln/detail/CVE-2026-27601)
+- upgrade `js-yaml` to `^4.3.0` to address [`CVE-2026-53550`](https://nvd.nist.gov/vuln/detail/CVE-2026-53550)
+
+Both CVEs were noted in issue https://github.com/cloudfoundry-community/node-cfenv/issues/59
+
 **1.2.6** - 2026/04/16
 
 - upgrade `underscore` to `1.13.x` to address `CVE-2026-27601` and [GHSA-qpx9-hpmf-5gmw](https://github.com/advisories/GHSA-qpx9-hpmf-5gmw) - pr #58
